@@ -1,6 +1,8 @@
 # 42 Cluster Stats 📊
 [🌐 Chrome Web Store](placeholder)
 
+![42 Cluster Stats Demo](demo.png)
+
 A browser extension for the **42 intra** that displays live cluster occupancy statistics in the sidebar on the clusters page.
 
 It currently provides a clean stats card with real-time occupancy data, crowd level indicators, per-zone breakdown, and automatic refresh.
