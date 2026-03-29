@@ -1,112 +1,205 @@
-# 42 Cluster Stats
+# 42 Cluster Stats 📊
 
-A browser extension that displays live cluster occupancy statistics in the sidebar on the 42 intra clusters page.
+A browser extension for the **42 intra** that displays live cluster occupancy statistics in the sidebar on the clusters page.
 
-## Features
+It currently provides a clean stats card with real-time occupancy data, crowd level indicators, per-zone breakdown, and automatic refresh.
 
-- Real-time display of occupied seats across all zones
-- Crowd level indicator (Empty, Light, Moderate, Busy, Very Busy)
-- Overview statistics: occupied, free, total seats, and occupancy percentage
-- Per-zone breakdown of active users
-- Auto-refresh every 30 seconds
-- SPA navigation support with mutation observer
-- Light, unobtrusive UI that matches the 42 intra style
+---
 
-## Installation
+## ✨ Features
 
-### From source (development)
+* Live display of occupied seats across all zones
+* Crowd level indicator (Empty, Light, Moderate, Busy, Very Busy)
+* Overview statistics:
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/your-username/42-cluster-stats.git
-   cd 42-cluster-stats
-   ```
+  * Occupied seats
+  * Free seats
+  * Total capacity
+  * Occupancy percentage
+* Per-zone breakdown of active users
+* Auto-refresh every 30 seconds
+* SPA navigation support with mutation observer
+* Light, unobtrusive UI that matches the 42 intra style
+
+---
+
+## 🖼️ Overview
+
+`42 Cluster Stats` enhances the 42 intra clusters page with a floating stats card in the sidebar.
+
+The extension is designed to make it easier to:
+
+* see current cluster occupancy at a glance
+* understand crowd levels before heading to a cluster
+* track which zones are busiest
+* monitor seat availability in real-time
+
+---
+
+## 📦 Installation
+
+### Chrome / Chromium-based browsers
+
+1. Clone or download this repository
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Build the extension:
+
    ```bash
    npm run build
    ```
 
-4. Load in Chrome/Edge:
-   - Navigate to `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked"
-   - Select the `build/` folder
+4. Open:
 
-5. Load in Firefox:
-   - Navigate to `about:debugging#/runtime/this-firefox`
-   - Click "Load Temporary Add-on"
-   - Select `build/manifest.json`
+   ```text
+   chrome://extensions
+   ```
 
-## Development
+5. Enable **Developer mode**
 
-Start the watch mode for automatic rebuilds:
+6. Click **Load unpacked**
+
+7. Select the `build/` folder
+
+8. Open the 42 intra clusters page and use the extension
+
+### Firefox
+
+1. Follow steps 1-3 above
+
+2. Open:
+
+   ```text
+   about:debugging#/runtime/this-firefox
+   ```
+
+3. Click **Load Temporary Add-on**
+
+4. Select `build/manifest.json`
+
+---
+
+## 🚀 Development
+
+Install dependencies:
 
 ```bash
-npm run watch
+npm install
 ```
 
-After making changes, reload the extension in your browser to see updates.
-
-## Build
-
-Build the extension for production:
+Run a production build:
 
 ```bash
 npm run build
 ```
 
-Output is placed in the `build/` directory, ready to be loaded as an unpacked extension or packaged for distribution.
+Run in watch mode:
 
-## Project Structure
-
+```bash
+npm run watch
 ```
+
+### Local workflow
+
+1. Edit the source files
+2. Run `npm run build` or `npm run watch`
+3. Reload the extension in your browser
+4. Test the updated version on the 42 intra clusters page
+
+---
+
+## 🏗️ Build Output
+
+The final extension package is generated in:
+
+```text
+build/
+```
+
+This folder contains the full unpacked extension package, including:
+
+* `manifest.json`
+* built scripts
+* icons
+* inlined CSS styles
+
+Use the `build/` folder for:
+
+* local unpacked loading
+* release packaging
+* store upload preparation
+
+---
+
+## 🧩 Project Structure
+
+```text
 42-cluster-stats/
+├── build/              # Final built extension package
+├── icons/              # Extension icons
 ├── src/
 │   └── content/
-│       ├── index.js           # Entry point, bootstrap, refresh logic
-│       ├── constants.js       # DOM IDs, API URLs, timing config
-│       ├── api.js             # Cluster data fetching
-│       ├── utils.js           # Pure utilities (escape, sleep, format)
-│       ├── stats.js           # Stats computation (parse, build, labels)
-│       ├── page.js            # Page detection, vacant count extraction
+│       ├── index.js        # Entry point, bootstrap, refresh logic
+│       ├── constants.js    # DOM IDs, API URLs, timing config
+│       ├── api.js          # Cluster data fetching
+│       ├── utils.js        # Pure utilities (escape, sleep, format)
+│       ├── stats.js        # Stats computation (parse, build, labels)
+│       ├── page.js         # Page detection, vacant count extraction
 │       └── ui/
 │           ├── sidebar-root.js  # Root element creation
 │           ├── render.js        # Loading, error, stats rendering
 │           └── styles.css       # All CSS styles
-├── icons/                     # Extension icons
-├── build/                     # Build output (generated)
-├── build.js                   # esbuild build script
-├── manifest.json              # Extension manifest (source)
-├── package.json               # Project configuration
+├── manifest.json       # Source manifest
+├── build.js            # Build script
+├── package.json
 └── README.md
 ```
 
-## How It Works
+> The exact internal source structure may evolve as the extension grows.
 
-1. The extension runs on `https://meta.intra.42.fr/clusters*`
-2. On page load, it injects a stats card into the left sidebar
-3. It fetches cluster data from the 42 intra API
-4. Active entries (where `end_at` is null) are filtered and deduplicated
-5. Vacant seat counts are read from the existing sidebar DOM
-6. Statistics are computed and rendered in the card
-7. The data auto-refreshes every 30 seconds
-8. A mutation observer ensures the card persists through SPA navigation
+---
 
-## Technical Notes
+## 🔐 Permissions
 
-- Built with plain JavaScript (no frameworks)
-- Uses Manifest V3
-- CSS is inlined during build for single-file deployment
-- Supports both Chrome/Edge and Firefox
-- Guards against duplicate initialization
-- HTML content is escaped to prevent XSS
+The extension uses minimal permissions:
 
-## License
+* Host permission for `meta.intra.42.fr` to access cluster data
+* No storage or external requests required
 
-MIT
+---
+
+## 🛠️ Technical Notes
+
+* Built with plain JavaScript (no frameworks)
+* Uses Manifest V3
+* CSS is inlined during build for single-file deployment
+* Supports both Chrome/Edge and Firefox
+* Guards against duplicate initialization
+* HTML content is escaped to prevent XSS
+
+---
+
+## 📌 Notes
+
+* The extension is intended for use on the **42 intra clusters page**
+* The unpacked development version should be loaded from the `build/` folder, not from the project root
+* After making changes, remember to reload the extension in the browser
+* Data refreshes automatically every 30 seconds
+
+---
+
+## 🤝 Contributing
+
+Suggestions, improvements, and feedback are welcome.
+
+If you want to improve the extension:
+
+* fork the repository
+* make your changes
+* test them on the 42 intra
+* open a pull request
