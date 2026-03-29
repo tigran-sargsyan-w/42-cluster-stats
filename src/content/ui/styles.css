@@ -1,0 +1,92 @@
+#cluster-stats-root {
+	margin: 18px 14px 0 14px;
+}
+
+.cluster-stats-card {
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 10px;
+	padding: 14px 12px;
+	color: #d8dde7;
+	font-family: inherit;
+}
+
+.cluster-stats-title {
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: #7ee7f7;
+	margin-bottom: 8px;
+}
+
+.cluster-stats-cluster-name {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #9aa4b2;
+	margin-bottom: 14px;
+}
+
+.cluster-big-number {
+	font-size: 32px;
+	font-weight: 800;
+	line-height: 1;
+	color: #ffffff;
+}
+
+.cluster-stats-subtitle {
+	font-size: 12px;
+	color: #9aa4b2;
+	margin-top: 6px;
+	margin-bottom: 12px;
+}
+
+.cluster-status-badge {
+	display: inline-block;
+	padding: 5px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 700;
+	background: rgba(126, 231, 247, 0.12);
+	color: #7ee7f7;
+	margin-bottom: 14px;
+}
+
+.cluster-stats-section {
+	margin-top: 14px;
+}
+
+.cluster-stats-section-title {
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #9aa4b2;
+	margin-bottom: 8px;
+}
+
+.cluster-stat-line {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 6px 0;
+	font-size: 13px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cluster-stats-footer {
+	margin-top: 14px;
+	font-size: 11px;
+	color: #7f8a99;
+}
+
+.cluster-stats-muted {
+	font-size: 12px;
+	color: #8a94a3;
+}
+
+.cluster-stats-error {
+	font-size: 12px;
+	color: #ff8d8d;
+}
