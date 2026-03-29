@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>42 Cluster Stats — Demo</title>
+  <style>
+    :root {
+      --bg-dark: #10121a;
+      --bg-main: #1a1d24;
+      --bg-sidebar: #212730;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.06);
+      --text: #e0e4eb;
+      --text-muted: #8a94a3;
+      --cyan: #00babc;
+      --cyan-light: #7ee7f7;
+      --green: #3dd598;
+      --red: #ea7480;
+      --pink: #ea7480;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      overflow: hidden;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 56px 240px 1fr 280px;
+      grid-template-rows: 50px 1fr;
+      height: 100vh;
+    }
+
+    /* ═══════════════════════════════════════════
+       Top Bar
+       ═══════════════════════════════════════════ */
+    .topbar {
+      grid-column: 1 / -1;
+      background: var(--bg-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo42 {
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      font-style: italic;
+      letter-spacing: -2px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .search-box svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.6;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .notification {
+      position: relative;
+      color: var(--text-muted);
+    }
+    .notification svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b7355, #d4b896);
+    }
+
+    .problem-btn {
+      background: var(--pink);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ═══════════════════════════════════════════
+       Icon Sidebar (leftmost)
+       ═══════════════════════════════════════════ */
+    .icon-sidebar {
+      background: var(--bg-dark);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+      gap: 8px;
+    }
+
+    .icon-item {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .icon-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .icon-item svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ═══════════════════════════════════════════
+       Nav Sidebar (second from left)
+       ═══════════════════════════════════════════ */
+    .nav-sidebar {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .nav-header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .collapse-btn {
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px 8px;
+    }
+
+    .nav-menu {
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      color: var(--cyan);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.03);
+    }
+    .nav-item.active {
+      color: var(--cyan);
+    }
+    .nav-item svg, .nav-item span.icon {
+      font-size: 16px;
+    }
+
+    /* ═══════════════════════════════════════════
+       Cluster Stats Card (Extension)
+       ═══════════════════════════════════════════ */
+    .stats-section {
+      padding: 16px 12px;
+    }
+
+    .cluster-stats-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .stats-title {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .stats-big-number {
+      font-size: 48px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stats-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      margin-bottom: 12px;
+    }
+
+    .stats-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(0, 186, 188, 0.15);
+      color: var(--cyan);
+      margin-bottom: 16px;
+    }
+    .stats-badge.light { background: rgba(61, 213, 152, 0.15); color: var(--green); }
+    .stats-badge.moderate { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+    .stats-badge.busy { background: rgba(255, 152, 0, 0.15); color: #ff9800; }
+    .stats-badge.very-busy { background: rgba(234, 116, 128, 0.15); color: var(--pink); }
+
+    .stats-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      margin-top: 16px;
+    }
+    .stats-section-title:first-of-type {
+      margin-top: 0;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .stats-row:last-child {
+      border-bottom: none;
+    }
+    .stats-row .label {
+      color: var(--text);
+    }
+    .stats-row .value {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .stats-footer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ═══════════════════════════════════════════
+       Main Content (Cluster Map)
+       ═══════════════════════════════════════════ */
+    .main-content {
+      background: var(--bg-main);
+      overflow: auto;
+      padding: 0;
+    }
+
+    .cluster-tabs {
+      display: flex;
+      gap: 24px;
+      padding: 20px 30px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cluster-tab {
+      padding: 12px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .cluster-tab:hover {
+      color: var(--text);
+    }
+    .cluster-tab.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .cluster-map {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .zone-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+    }
+
+    .zone {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .zone-name {
+      font-size: 120px;
+      font-weight: 700;
+      color: #3a3f4a;
+      text-align: center;
+      line-height: 0.8;
+      margin-bottom: 20px;
+    }
+
+    .zone-rows {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .desk-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .desk-row.right {
+      flex-direction: row-reverse;
+    }
+
+    .row-label {
+      font-size: 24px;
+      font-weight: 700;
+      color: #4a5060;
+      width: 40px;
+      text-align: center;
+    }
+
+    .desks {
+      display: flex;
+      gap: 4px;
+    }
+
+    .desk-row.right .desks {
+      flex-direction: row-reverse;
+    }
+
+    .desk {
+      width: 44px;
+      height: 52px;
+      background: #4a5060;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 4px;
+      position: relative;
+    }
+
+    .desk-number {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8a94a3;
+    }
+
+    .desk.occupied {
+      background: #3a3f4a;
+    }
+
+    .desk .avatar {
+      position: absolute;
+      top: 4px;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #8b7355, #d4b896);
+      background-size: cover;
+    }
+
+    .desk .avatar.blocked {
+      background: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .desk .avatar.blocked::after {
+      content: "🚫";
+      font-size: 20px;
+    }
+
+    /* ═══════════════════════════════════════════
+       Right Sidebar (Live Feed)
+       ═══════════════════════════════════════════ */
+    .right-sidebar {
+      background: var(--bg-main);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .vacant-section {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .vacant-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .vacant-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .vacant-label {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .vacant-badge {
+      background: rgba(0, 186, 188, 0.15);
+      color: var(--cyan);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .live-section {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .live-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+    }
+
+    .live-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .live-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .live-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .live-user {
+      font-size: 13px;
+    }
+    .live-user .name {
+      color: var(--cyan);
+      font-weight: 500;
+    }
+    .live-user.logged-off .dot {
+      color: var(--pink);
+    }
+    .live-user.logged-on .dot {
+      color: var(--green);
+    }
+
+    .live-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .live-location {
+      background: rgba(0, 186, 188, 0.15);
+      color: var(--cyan);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Demo badge */
+    .demo-badge {
+      position: fixed;
+      top: 60px;
+      right: 300px;
+      background: linear-gradient(135deg, var(--cyan), #0ea5b3);
+      color: #061116;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 11px;
+      z-index: 99;
+    }
+
+    @media (max-width: 1200px) {
+      .app {
+        grid-template-columns: 56px 200px 1fr;
+      }
+      .right-sidebar {
+        display: none;
+      }
+    }
+    @media (max-width: 800px) {
+      .app {
+        grid-template-columns: 56px 1fr;
+      }
+      .nav-sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-badge">Interactive Demo</div>
+
+  <div class="app">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo42">42</div>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>search...</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="notification">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <div class="user-info">
+          <span>login</span>
+          <div class="user-avatar"></div>
+        </div>
+        <button class="problem-btn">Have a problem?</button>
+      </div>
+    </header>
+
+    <!-- Icon Sidebar -->
+    <aside class="icon-sidebar">
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+        </svg>
+      </div>
+      <div class="icon-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+      </div>
+    </aside>
+
+    <!-- Nav Sidebar -->
+    <aside class="nav-sidebar">
+      <div class="nav-header">
+        <button class="collapse-btn">&lt;</button>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-item"><span class="icon">❓</span> F.A.Q</div>
+        <div class="nav-item active"><span class="icon">💻</span> Clusters</div>
+        <div class="nav-item"><span class="icon">🎫</span> Issues</div>
+        <div class="nav-item"><span class="icon">🔄</span> API</div>
+      </nav>
+
+      <!-- Extension Stats Card -->
+      <div class="stats-section">
+        <div class="cluster-stats-card" id="statsCard">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="cluster-tabs">
+        <div class="cluster-tab active">Io</div>
+        <div class="cluster-tab">Discovery</div>
+      </div>
+
+      <div class="cluster-map" id="clusterMap">
+        <!-- Rendered by JS -->
+      </div>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+      <div class="vacant-section">
+        <div class="vacant-row">
+          <span class="vacant-label">Io</span>
+          <span class="vacant-badge" id="vacantIo">105 vacant posts.</span>
+        </div>
+        <div class="vacant-row">
+          <span class="vacant-label">Discovery</span>
+          <span class="vacant-badge" id="vacantDiscovery">92 vacant posts.</span>
+        </div>
+      </div>
+
+      <div class="live-section">
+        <div class="live-title">LIVE</div>
+        <div class="live-feed" id="liveFeed">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════
+    // Demo Data
+    // ═══════════════════════════════════════════
+
+    const zones = [
+      { name: "Z2", rows: [8,7,6,5,4,3,2,1] },
+      { name: "Z1", rows: [5,4,3,2,1] },
+    ];
+
+    const zoneStats = {
+      Z1: 6,
+      Z2: 10,
+      Z3: 11,
+      Z4: 19
+    };
+
+    const liveEvents = [
+      { user: "ilounas", action: "logged off", location: "z1r7p1", time: "a few seconds ago" },
+      { user: "ansaccar", action: "logged on", location: "z2r6p2", time: "a few seconds ago" },
+      { user: "nofanizz", action: "logged off", location: "z1r11p1", time: "a few seconds ago" },
+      { user: "il-hotel", action: "logged off", location: "z4r6p7", time: "a few seconds ago" },
+      { user: "sjean", action: "logged off", location: "z4r12p3", time: "a few seconds ago" },
+      { user: "abetemps", action: "logged on", location: "z2r6p5", time: "a few seconds ago" },
+      { user: "authomas", action: "logged on", location: "z3r10p5", time: "a few seconds ago" },
+      { user: "rdesprez", action: "logged off", location: "z1r5p6", time: "a few seconds ago" },
+      { user: "chafonka", action: "logged off", location: "z4r2p6", time: "a few seconds ago" },
+    ];
+
+    // Random occupied desks
+    const occupiedDesks = new Set();
+    for (let i = 0; i < 46; i++) {
+      const zone = Math.random() > 0.5 ? "Z1" : "Z2";
+      const row = Math.floor(Math.random() * 8) + 1;
+      const pos = Math.floor(Math.random() * 8) + 1;
+      occupiedDesks.add(`${zone}-R${row}-${pos}`);
+    }
+
+    // ═══════════════════════════════════════════
+    // Render Functions
+    // ═══════════════════════════════════════════
+
+    function renderStats() {
+      const occupied = 46;
+      const total = 243;
+      const free = total - occupied;
+      const percent = Math.round((occupied / total) * 100);
+
+      document.getElementById("statsCard").innerHTML = `
+        <div class="stats-title">CLUSTER STATS</div>
+        <div class="stats-big-number">${occupied}</div>
+        <div class="stats-subtitle">occupied seats</div>
+        <div class="stats-badge">Quite empty</div>
+
+        <div class="stats-section-title">OVERVIEW</div>
+        <div class="stats-row">
+          <span class="label">Occupied</span>
+          <span class="value">${occupied}</span>
+        </div>
+        <div class="stats-row">
+          <span class="label">Free</span>
+          <span class="value">${free}</span>
+        </div>
+        <div class="stats-row">
+          <span class="label">Total</span>
+          <span class="value">${total}</span>
+        </div>
+        <div class="stats-row">
+          <span class="label">Occupancy</span>
+          <span class="value">${percent}%</span>
+        </div>
+
+        <div class="stats-section-title">BY ZONE</div>
+        <div class="stats-row">
+          <span class="label">Z1</span>
+          <span class="value">${zoneStats.Z1}</span>
+        </div>
+        <div class="stats-row">
+          <span class="label">Z2</span>
+          <span class="value">${zoneStats.Z2}</span>
+        </div>
+        <div class="stats-row">
+          <span class="label">Z3</span>
+          <span class="value">${zoneStats.Z3}</span>
+        </div>
+        <div class="stats-row">
+          <span class="label">Z4</span>
+          <span class="value">${zoneStats.Z4}</span>
+        </div>
+
+        <div class="stats-footer">Updated: ${new Date().toLocaleTimeString('en-GB')}</div>
+      `;
+    }
+
+    function renderClusterMap() {
+      const map = document.getElementById("clusterMap");
+      map.innerHTML = "";
+
+      // Zone pair (Z2 left, Z1 right)
+      const pairEl = document.createElement("div");
+      pairEl.className = "zone-pair";
+
+      // Z2
+      pairEl.appendChild(createZone("Z2", [
+        { label: "R1", desks: 8, direction: "left" },
+        { label: "R2", desks: 8, direction: "left" },
+        { label: "R3", desks: 8, direction: "left" },
+        { label: "R4", desks: 8, direction: "left" },
+        { label: "R5", desks: 8, direction: "left" },
+        { label: "R6", desks: 8, direction: "left" },
+        { label: "R7", desks: 8, direction: "left" },
+        { label: "R8", desks: 8, direction: "left" },
+        { label: "R9", desks: 8, direction: "left" },
+        { label: "R10", desks: 8, direction: "left" },
+      ]));
+
+      // Z1
+      pairEl.appendChild(createZone("Z1", [
+        { label: "R1", desks: 7, direction: "right" },
+        { label: "R2", desks: 7, direction: "right" },
+        { label: "R3", desks: 7, direction: "right" },
+        { label: "R4", desks: 7, direction: "right" },
+        { label: "R5", desks: 7, direction: "right" },
+        { label: "R6", desks: 7, direction: "right" },
+        { label: "R7", desks: 7, direction: "right" },
+        { label: "R8", desks: 7, direction: "right" },
+        { label: "R9", desks: 7, direction: "right" },
+        { label: "R10", desks: 7, direction: "right" },
+      ]));
+
+      map.appendChild(pairEl);
+    }
+
+    function createZone(name, rows) {
+      const zone = document.createElement("div");
+      zone.className = "zone";
+
+      zone.innerHTML = `<div class="zone-name">${name}</div>`;
+
+      const rowsContainer = document.createElement("div");
+      rowsContainer.className = "zone-rows";
+
+      rows.forEach(row => {
+        const rowEl = document.createElement("div");
+        rowEl.className = `desk-row ${row.direction}`;
+
+        const label = document.createElement("div");
+        label.className = "row-label";
+        label.textContent = row.label;
+
+        const desks = document.createElement("div");
+        desks.className = "desks";
+
+        for (let i = row.desks; i >= 1; i--) {
+          const desk = document.createElement("div");
+          const deskId = `${name}-${row.label}-${i}`;
+          const isOccupied = occupiedDesks.has(deskId) || Math.random() < 0.2;
+
+          desk.className = isOccupied ? "desk occupied" : "desk";
+
+          if (isOccupied) {
+            const avatar = document.createElement("div");
+            avatar.className = Math.random() < 0.1 ? "avatar blocked" : "avatar";
+            desk.appendChild(avatar);
+          }
+
+          const num = document.createElement("div");
+          num.className = "desk-number";
+          num.textContent = i;
+          desk.appendChild(num);
+
+          desks.appendChild(desk);
+        }
+
+        rowEl.appendChild(desks);
+        rowEl.appendChild(label);
+        rowsContainer.appendChild(rowEl);
+      });
+
+      zone.appendChild(rowsContainer);
+      return zone;
+    }
+
+    function renderLiveFeed() {
+      const feed = document.getElementById("liveFeed");
+      feed.innerHTML = liveEvents.map(e => `
+        <div class="live-item">
+          <div class="live-info">
+            <div class="live-user ${e.action === 'logged on' ? 'logged-on' : 'logged-off'}">
+              <span class="dot">●</span>
+              <span class="name">${e.user}</span>
+              <span>${e.action}</span>
+            </div>
+            <div class="live-time">${e.time}</div>
+          </div>
+          <div class="live-location">${e.location}</div>
+        </div>
+      `).join("");
+    }
+
+    // ═══════════════════════════════════════════
+    // Tab switching
+    // ═══════════════════════════════════════════
+    document.querySelectorAll(".cluster-tab").forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll(".cluster-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+      };
+    });
+
+    // ═══════════════════════════════════════════
+    // Initialize
+    // ═══════════════════════════════════════════
+    renderStats();
+    renderClusterMap();
+    renderLiveFeed();
+  </script>
+</body>
+</html>
