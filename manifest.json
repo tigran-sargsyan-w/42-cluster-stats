@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "42 Cluster Stats FR",
   "version": "0.1.1",
-  "description": "Shows live cluster occupancy stats in the left sidebar on meta.intra.42.fr/clusters",
+  "description": "Shows live cluster occupancy stats in the left sidebar on intra clusters page.",
   "minimum_chrome_version": "126",
   "permissions": [],
   "host_permissions": [
