@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "42 Cluster Stats",
+  "version": "0.1.0",
+  "description": "Shows live cluster occupancy stats in the left sidebar on meta.intra.42.fr/clusters",
+  "permissions": [],
+  "host_permissions": [
+    "https://meta.intra.42.fr/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meta.intra.42.fr/clusters*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
