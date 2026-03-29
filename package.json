@@ -1,0 +1,14 @@
+{
+  "name": "42-cluster-stats",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser extension that shows live cluster occupancy stats on 42 intra",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
+  }
+}
