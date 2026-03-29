@@ -1,4 +1,5 @@
 # 42 Cluster Stats 📊
+[🌐 Chrome Web Store](placeholder)
 
 A browser extension for the **42 intra** that displays live cluster occupancy statistics in the sidebar on the clusters page.
 
