@@ -1,5 +1,5 @@
 # 42 Cluster Stats 📊
-[🌐 Chrome Web Store](placeholder)
+[🌐 Chrome Web Store](https://chromewebstore.google.com/detail/aggohbfeoehknnidmbcikjgapbaahoeg?utm_source=item-share-cb)
 
 ![42 Cluster Stats Demo](demo-2560x1600.png)
 
