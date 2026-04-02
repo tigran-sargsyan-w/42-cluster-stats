@@ -1,9 +1,11 @@
 {
   "manifest_version": 3,
   "name": "42 Cluster Stats FR",
-  "version": "0.1.1",
+  "short_name": "42 Stats FR",
+  "version": "0.1.2",
   "description": "Shows live cluster occupancy stats in the left sidebar on intra clusters page.",
   "minimum_chrome_version": "126",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArkJ4ZyTgM2XPElZqVubPvAle6t+AUOWdugcVpQ1yW3gXn0FTiGxIQHTo4vs43BzhoTmWzMPTqZk1IztKpNaUUnBloH6zOr0/9dIEDoGvjpor0pYV+Hxwn3fJ6AmNfzHEpCkQ2vij7jQNJP0CUi7zBIcBTJUBD6MkEgoTs69cSAGzUyg/iG6ExOwO33Nhs74xUznUh8fNFjXMxt1gUzpwuGlYPt3VqQhLpDXkjk0RYRgTsRvmfMPq8ClflHwQimTBeybeUnSp+4tgcZBPC3fmf/3BAJOFAG6BKiTw2nF6FX1Ota9p3yEr4tGvsvbgvXwvoP7mSu1Wqc4fm54ZMfh6MQIDAQAB",
   "permissions": [],
   "host_permissions": [
     "https://meta.intra.42.fr/*"
